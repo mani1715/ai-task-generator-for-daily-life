@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Task Generator</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    textarea { width: 80%; height: 100px; margin: 10px 0; }
+    button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #0056b3; }
+    .result { width: 80%; margin: 20px auto; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>AI Task Generator</h1>
+  <p>Enter your prompt below:</p>
+  <textarea id="prompt" placeholder="e.g., Create a daily routine for a college student"></textarea><br />
+  <button onclick="generate()">Generate</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    async function generate() {
+      const prompt = document.getElementById("prompt").value;
+      if (!prompt.trim()) {
+        document.getElementById("result").innerText = "⚠️ Please enter a prompt.";
+        return;
+      }
+      document.getElementById("result").innerText = "⏳ Generating...";
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        document.getElementById("result").innerText = data.result || "❌ Error: " + data.error;
+      } catch (err) {
+        document.getElementById("result").innerText = "❌ Failed to connect to server.";
+      }
+    }
+  </script>
+</body>
+</html>

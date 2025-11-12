@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Task Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 { color: #333; }
+    textarea {
+      width: 400px;
+      height: 100px;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover { background: #0056b3; }
+    pre {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 600px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>AI Task Generator</h1>
+  <textarea id="prompt" placeholder="Enter a prompt (e.g. create a daily routine for a college student)"></textarea><br />
+  <button onclick="generate()">Generate</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function generate() {
+      const prompt = document.getElementById("prompt").value.trim();
+      if (!prompt) {
+        document.getElementById("output").textContent = "⚠️ Please enter a prompt.";
+        return;
+      }
+
+      document.getElementById("output").textContent = "⏳ Generating...";
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        if (data.result) {
+          document.getElementById("output").textContent = data.result;
+        } else {
+          document.getElementById("output").textContent = "❌ " + data.error;
+        }
+      } catch (err) {
+        document.getElementById("output").textContent = "❌ Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
